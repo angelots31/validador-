@@ -14,7 +14,7 @@ se llegó a ese resultado.
 
 | Nombre completo | GitHub |
 |---|---|
-| Angelo Martínez Díaz | @angelots |
+| Angelo Martínez Díaz | @angelots31 |
 | Simón Carmona Betancur | @stronghoold |
 
 ## Enlaces de despliegue
