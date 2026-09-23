@@ -83,6 +83,16 @@
     padding: 0;
 }
 
+/* El atributo [hidden] debe ganar siempre. Varias reglas de este archivo
+   (.viewport video/img, .btn, etc.) definen su propio `display` con la
+   misma o mayor prioridad que la hoja de estilos del navegador, así que
+   sin esta regla esos elementos se quedan visibles aunque JS les ponga
+   `hidden = true` (la cámara vieja, la vista previa rota, los botones que
+   no tocan en cada estado). */
+[hidden] {
+    display: none !important;
+}
+
 html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
@@ -865,6 +875,7 @@ svg {
 }
 
 .metric-bar__fill {
+    display: block;
     height: 100%;
     width: 0;
     background: var(--ink-muted);
@@ -972,6 +983,7 @@ svg {
 }
 
 .candidate__fill {
+    display: block;
     height: 100%;
     width: 0;
     background: var(--terracotta);
