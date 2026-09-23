@@ -1,0 +1,28 @@
+# Archivos que NO se suben a Vercel. Es distinto de .gitignore: esto solo
+# afecta al despliegue, así que los archivos siguen estando en local.
+#
+# Importa porque el CLI de Vercel sube el directorio tal cual (no mira
+# .gitignore): sin esto se subirían ~200 MB de venv.
+
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+app.db
+.cache/
+scripts/
+tests/
+
+# Modelos CLIP inservibles. Se generaron con
+# `onnxruntime.quantization.quantize_dynamic`, que descompone las
+# LayerNormalization y corrompe las proyecciones: el encoder de texto colapsa
+# y el de visión devuelve normas de 10⁵. Ninguna etapa de la cascada los usa
+# hoy, y si llegaran a producción con la etapa conectada darían resultados
+# erróneos con toda seguridad.
+#
+# Para re-exportarlos bien: `python scripts/export_clip_onnx.py`
+# (el script valida el resultado antes de instalarlo). Cuando la validación
+# pase, borra estas dos líneas y conecta la etapa en app/ml/inference.py.
+app/ml/clip/vision_model.onnx
+app/ml/clip/text_model.onnx

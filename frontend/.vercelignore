@@ -1,0 +1,13 @@
+# Archivos que NO se suben a Vercel. Es distinto de .gitignore: esto solo
+# afecta al despliegue, así que los archivos siguen estando en local.
+#
+# Importa porque el CLI de Vercel sube el directorio tal cual (no mira
+# .gitignore): sin esto se subirían ~200 MB de venv.
+
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+staticfiles/
