@@ -1,0 +1,29 @@
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Base de datos
+*.db
+db.sqlite3
+
+# Variables de entorno
+.env
+
+# Vercel
+.vercel/
+
+# Archivos de build
+staticfiles/
+media/

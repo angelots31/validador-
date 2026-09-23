@@ -1,0 +1,26 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+pydantic-settings>=2.2
+python-dotenv>=1.0
+sqlalchemy>=2.0
+
+# Commit 2 - autenticación JWT
+python-jose[cryptography]>=3.3
+bcrypt>=4.0
+python-multipart>=0.0.9
+
+# Commit 8 - base de datos Postgres administrada en producción
+# (DATABASE_URL). En local, sin esa variable, se usa SQLite y este driver
+# simplemente no se toca. Se instala la rueda `binary`, que trae libpq
+# empaquetado: en Vercel no hay un libpq del sistema que enlazar.
+psycopg[binary]>=3.1
+
+# Commit 3 - modelo preentrenado (ResNet18 en formato ONNX)
+# Nota: se usa onnxruntime en vez de torch/torchvision a propósito: pesa
+# ~70 MB en total (modelo + librería) contra varios cientos de MB de
+# PyTorch, lo cual es necesario para caber en el límite de tamaño de una
+# Vercel Serverless Function (commit 8).
+onnxruntime>=1.17
+numpy>=1.26
+pillow>=10.2

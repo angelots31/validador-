@@ -1,0 +1,8 @@
+Django>=5.0,<6.2
+python-dotenv>=1.0
+requests>=2.31
+
+# Base de datos Postgres administrada en producción (DATABASE_URL). La rueda
+# `binary` trae libpq empaquetado, necesario porque en Vercel no hay un libpq
+# del sistema. En local, sin DATABASE_URL, se usa SQLite y no se toca.
+psycopg[binary]>=3.1
