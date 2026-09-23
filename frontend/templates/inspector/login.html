@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión · Validador de Frutas y Verduras{% endblock %}
+
+{% block content %}
+<div class="auth reveal">
+    <aside class="auth__aside">
+        <div>
+            <p class="kicker" style="color:#d99b7d">Taller 4 · Python + ML + FastAPI</p>
+            <p class="auth__quote">
+                Cada foto que subes pasa por un modelo preentrenado y por un
+                clasificador de color y forma. <em>Aquí ves cuál de los dos habló.</em>
+            </p>
+        </div>
+
+        <ul class="auth__list">
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> ResNet18 preentrenado en ImageNet</li>
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> 30 productos de plaza y mercado</li>
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> Calidad y madurez explicadas</li>
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> Historial por usuario con JWT</li>
+        </ul>
+    </aside>
+
+    <div class="auth__main">
+        <h1 class="auth__title">Iniciar sesión</h1>
+        <p class="auth__sub">Entra con tu cuenta para inspeccionar productos y ver tu historial.</p>
+
+        <form method="post" class="form" novalidate>
+            {% csrf_token %}
+
+            <div class="field">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" placeholder="tu nombre de usuario"
+                       required autofocus autocomplete="username">
+            </div>
+
+            <div class="field">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="tu contraseña"
+                       required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn--primary">
+                <svg aria-hidden="true"><use href="#i-shield"></use></svg>
+                Entrar
+            </button>
+        </form>
+
+        <p class="auth__footer">
+            ¿No tienes cuenta? <a href="{% url 'inspector:register' %}">Créala en un minuto</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

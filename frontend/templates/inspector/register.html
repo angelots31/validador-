@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta · Validador de Frutas y Verduras{% endblock %}
+
+{% block content %}
+<div class="auth reveal">
+    <aside class="auth__aside">
+        <div>
+            <p class="kicker" style="color:#d99b7d">Taller 4 · Python + ML + FastAPI</p>
+            <p class="auth__quote">
+                Una cuenta te da tu <em>propio historial</em>: cada inspección queda
+                registrada con el producto, su estado y el método que lo identificó.
+            </p>
+        </div>
+
+        <ul class="auth__list">
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> Contraseña cifrada con bcrypt</li>
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> Sesión con token JWT</li>
+            <li><svg aria-hidden="true"><use href="#i-check"></use></svg> Sin límite de inspecciones</li>
+        </ul>
+    </aside>
+
+    <div class="auth__main">
+        <h1 class="auth__title">Crear cuenta</h1>
+        <p class="auth__sub">Elige un usuario y una contraseña de al menos 6 caracteres.</p>
+
+        <form method="post" class="form" novalidate>
+            {% csrf_token %}
+
+            <div class="field">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" placeholder="mínimo 3 caracteres"
+                       required minlength="3" maxlength="50" autofocus autocomplete="username">
+            </div>
+
+            <div class="field">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="mínimo 6 caracteres"
+                       required minlength="6" autocomplete="new-password">
+            </div>
+
+            <div class="field">
+                <label for="password_confirm">Confirmar contraseña</label>
+                <input type="password" id="password_confirm" name="password_confirm" placeholder="repítela"
+                       required minlength="6" autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn btn--primary">
+                <svg aria-hidden="true"><use href="#i-check"></use></svg>
+                Crear cuenta
+            </button>
+        </form>
+
+        <p class="auth__footer">
+            ¿Ya tienes cuenta? <a href="{% url 'inspector:login' %}">Inicia sesión</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
