@@ -14,15 +14,15 @@ se llegó a ese resultado.
 
 | Nombre completo | GitHub |
 |---|---|
-| Angelo Martínez Díaz | *@pendiente* |
-| Simón Carmona Betancur | *@pendiente* |
+| Angelo Martínez Díaz | @angelots |
+| Simón Carmona Betancur | @stronghoold |
 
 ## Enlaces de despliegue
 
 | Servicio | Enlace |
 |---|---|
-| Backend (FastAPI · Swagger en `/docs`) | *pendiente de despliegue* |
-| Frontend (Django) | *pendiente de despliegue* |
+| Backend (FastAPI · Swagger en `/docs`) | https://validador-lyart.vercel.app/ |
+| Frontend (Django) | https://validador-a2vb.vercel.app/ |
 
 ---
 
