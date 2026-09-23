@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inspeccionar producto · Validador de Frutas y Verduras{% endblock %}
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+<section class="masthead">
+    <div>
+        <p class="kicker">Taller 4 · Visión por computador</p>
+        <h1 class="masthead__title">Control de calidad de <em>frutas y verduras</em></h1>
+        <p class="masthead__lede">
+            Encuadra el producto en la guía, captura la foto y el sistema te dice qué es,
+            en qué estado está y con qué se llegó a esa conclusión. Cubre lo que el modelo
+            conoce y también lo que no: papaya, mango, guayaba, ahuyama y demás productos
+            que no están entre las mil categorías de ImageNet.
+        </p>
+    </div>
+
+    <dl class="stats" id="stats">
+        <div class="stat">
+            <dt>Inspecciones</dt>
+            <dd class="stat__value" id="stat-total" data-count-to="0">0</dd>
+        </div>
+        <div class="stat">
+            <dt>Confianza media</dt>
+            <dd class="stat__value" id="stat-confidence">—</dd>
+        </div>
+        <div class="stat">
+            <dt>Frutas / Verduras</dt>
+            <dd class="stat__value" id="stat-mix">—</dd>
+        </div>
+        <div class="stat">
+            <dt>Última inspección</dt>
+            <dd class="stat__value" id="stat-last" style="font-size:0.95rem">—</dd>
+        </div>
+    </dl>
+</section>
+
+<div class="workspace">
+
+    {# ------------------------------ Panel izquierdo: cámara ------------------------------ #}
+    <section class="panel panel--camera reveal" aria-labelledby="camera-heading">
+        <header class="panel__head">
+            <h2 class="panel__title" id="camera-heading">
+                <svg aria-hidden="true"><use href="#i-camera"></use></svg>
+                Cámara
+            </h2>
+            <span class="panel__meta" id="camera-meta" data-live="false">en espera</span>
+        </header>
+
+        <div class="panel__body">
+            <div class="viewport" id="viewport" data-state="idle">
+                <video id="camera-video" autoplay playsinline muted hidden></video>
+                <img id="preview-image" alt="Foto capturada del producto" hidden>
+                <canvas id="capture-canvas" hidden></canvas>
+
+                <div class="viewport__grid" id="viewport-grid" aria-hidden="true"></div>
+
+                <div class="viewport__guide" id="viewport-guide" aria-hidden="true">
+                    <span class="bracket bracket--tl"></span>
+                    <span class="bracket bracket--tr"></span>
+                    <span class="bracket bracket--bl"></span>
+                    <span class="bracket bracket--br"></span>
+                </div>
+
+                <div class="viewport__scan" id="viewport-scan" aria-hidden="true"></div>
+
+                <div class="viewport__hud" aria-hidden="true">
+                    <span id="hud-resolution">—</span>
+                    <span id="hud-state">EN ESPERA</span>
+                </div>
+
+                <div class="viewport__placeholder" id="viewport-placeholder">
+                    <svg aria-hidden="true"><use href="#i-scan"></use></svg>
+                    <p>Activa la cámara y encuadra el producto dentro de la guía</p>
+                </div>
+            </div>
+
+            <div class="stages" id="stages" hidden aria-hidden="true">
+                <ol>
+                    <li class="stage" data-stage="0"><span class="stage__dot"></span>Separando el producto del fondo</li>
+                    <li class="stage" data-stage="1"><span class="stage__dot"></span>Identificando la especie</li>
+                    <li class="stage" data-stage="2"><span class="stage__dot"></span>Midiendo color y forma</li>
+                    <li class="stage" data-stage="3"><span class="stage__dot"></span>Estimando calidad y madurez</li>
+                </ol>
+            </div>
+
+            <p class="status" id="camera-status" role="status" aria-live="polite"></p>
+
+            <div class="controls">
+                <button type="button" id="start-camera-btn" class="btn btn--primary">
+                    <svg aria-hidden="true"><use href="#i-camera"></use></svg>
+                    Activar cámara
+                </button>
+
+                <button type="button" id="capture-btn" class="btn btn--primary" hidden>
+                    <svg aria-hidden="true"><use href="#i-camera"></use></svg>
+                    Tomar foto
+                </button>
+
+                <button type="button" id="retake-btn" class="btn btn--ghost" hidden>
+                    <svg aria-hidden="true"><use href="#i-refresh"></use></svg>
+                    Repetir
+                </button>
+
+                <button type="button" id="analyze-btn" class="btn btn--accent" hidden>
+                    <svg aria-hidden="true"><use href="#i-scan"></use></svg>
+                    Analizar
+                </button>
+
+                <button type="button" id="switch-camera-btn" class="btn btn--ghost" hidden title="Cambiar entre cámara frontal y trasera">
+                    <svg aria-hidden="true"><use href="#i-swap"></use></svg>
+                    Girar cámara
+                </button>
+
+                <label class="btn btn--ghost" for="file-input" id="file-label">
+                    <svg aria-hidden="true"><use href="#i-upload"></use></svg>
+                    Subir archivo
+                </label>
+                <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+
+            <ul class="tips">
+                <li>Usa un fondo liso y de un color distinto al del producto: con eso la segmentación separa mejor la forma.</li>
+                <li>Llena la guía con el producto, sin que se salga del cuadro.</li>
+                <li>Luz natural o blanca y sin sombras duras: las sombras se leen como manchas.</li>
+                <li>Atajos: <kbd>Espacio</kbd> para capturar, <kbd>Enter</kbd> para analizar, <kbd>R</kbd> para repetir.</li>
+            </ul>
+        </div>
+    </section>
+
+    {# ------------------------------ Panel derecho: análisis ------------------------------ #}
+    <section class="panel panel--analysis reveal" id="analysis-panel" aria-labelledby="analysis-heading">
+        <header class="panel__head">
+            <h2 class="panel__title" id="analysis-heading">
+                <svg aria-hidden="true"><use href="#i-chart"></use></svg>
+                Análisis
+            </h2>
+            <button type="button" id="copy-result-btn" class="btn btn--ghost btn--tiny" hidden>
+                <svg aria-hidden="true"><use href="#i-copy"></use></svg>
+                Copiar JSON
+            </button>
+        </header>
+
+        <div class="panel__body">
+            <div class="empty" id="analysis-empty">
+                <svg aria-hidden="true"><use href="#i-scan"></use></svg>
+                <p>Los resultados de la inspección aparecerán aquí en cuanto analices una foto.</p>
+            </div>
+
+            <div id="result-panel" hidden>
+                <div class="result__head">
+                    <p class="result__kicker" id="result-category">—</p>
+                    <h3 class="result__item" id="result-item">—</h3>
+                    <p class="result__method">
+                        <span class="chip" id="result-method">—</span>
+                        <span id="result-method-note"></span>
+                    </p>
+                </div>
+
+                <div class="result__top">
+                    <figure class="gauge">
+                        <svg class="gauge__svg" viewBox="0 0 120 120" aria-hidden="true">
+                            <circle class="gauge__track" cx="60" cy="60" r="52"></circle>
+                            <circle class="gauge__value" id="gauge-value" cx="60" cy="60" r="52"
+                                    stroke-dasharray="326.7" stroke-dashoffset="326.7"></circle>
+                        </svg>
+                        <figcaption class="gauge__caption">
+                            <span class="gauge__number" id="result-confidence">0%</span>
+                            <span class="gauge__label">confianza</span>
+                        </figcaption>
+                    </figure>
+
+                    <dl class="metrics">
+                        <dt>Calidad</dt>
+                        <dd><span class="chip" id="result-quality">—</span></dd>
+
+                        <dt>Madurez</dt>
+                        <dd><span class="chip" id="result-ripeness">—</span></dd>
+
+                        <dt>Categoría</dt>
+                        <dd id="result-category-text">—</dd>
+
+                        <dt>Forma</dt>
+                        <dd>
+                            <span class="metric-bar">
+                                <span class="metric-bar__track">
+                                    <span class="metric-bar__fill" id="shape-fill" data-max="2.5"></span>
+                                </span>
+                                <span class="metric-bar__value" id="result-shape">—</span>
+                            </span>
+                        </dd>
+
+                        <dt>Segmentación</dt>
+                        <dd>
+                            <span class="metric-bar">
+                                <span class="metric-bar__track">
+                                    <span class="metric-bar__fill" id="segmentation-fill" data-max="1"></span>
+                                </span>
+                                <span class="metric-bar__value" id="result-segmentation">—</span>
+                            </span>
+                        </dd>
+
+                        <dt>Manchas</dt>
+                        <dd>
+                            <span class="metric-bar">
+                                <span class="metric-bar__track">
+                                    <span class="metric-bar__fill" id="blemish-fill" data-max="0.5"></span>
+                                </span>
+                                <span class="metric-bar__value" id="result-blemish">—</span>
+                            </span>
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="block">
+                    <p class="block__title">Composición de color</p>
+                    <div class="color-bar" id="color-bar" role="img" aria-label="Reparto de color de la superficie del producto"></div>
+                    <ul class="color-legend" id="color-legend"></ul>
+                </div>
+
+                <div class="block">
+                    <p class="block__title">Otras propuestas del clasificador</p>
+                    <ul class="candidates" id="candidates"></ul>
+                </div>
+
+                <div class="block">
+                    <p class="block__title">Cómo se decidió</p>
+                    <ul class="notes" id="result-notes"></ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{# -------------------------------- Historial -------------------------------- #}
+<section class="panel history reveal" aria-labelledby="history-heading">
+    <header class="panel__head">
+        <h2 class="panel__title" id="history-heading">
+            <svg aria-hidden="true"><use href="#i-history"></use></svg>
+            Historial de inspecciones
+        </h2>
+        <span class="panel__meta" id="history-count">—</span>
+    </header>
+
+    <div class="history__head" id="history-head" hidden>
+        <span>#</span>
+        <span>Producto</span>
+        <span>Estado</span>
+        <span>Método de identificación</span>
+        <span>Fecha</span>
+    </div>
+
+    <p class="status" id="history-placeholder" style="padding:1.35rem">Cargando historial…</p>
+
+    <div class="empty" id="history-empty" hidden>
+        <svg aria-hidden="true"><use href="#i-history"></use></svg>
+        <p>Todavía no tienes inspecciones registradas. Analiza tu primera foto para empezar el historial.</p>
+    </div>
+
+    <ul class="history__list" id="history-list" hidden></ul>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Datos que el backend Django inyecta en la página para que el
+        // JavaScript no tenga que adivinar ninguna URL ni el token CSRF.
+        window.VALIDADOR_CONFIG = {
+            analyzeUrl: "{% url 'inspector:analyze' %}",
+            historyUrl: "{% url 'inspector:history' %}",
+            csrfToken: "{{ csrf_token }}",
+            username: "{{ request.session.username|escapejs }}",
+        };
+    </script>
+    <script src="{% static 'js/camera.js' %}"></script>
+{% endblock %}
