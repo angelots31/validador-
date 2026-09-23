@@ -19,7 +19,7 @@ navegador.
 import requests
 from django.conf import settings
 
-TIMEOUT = 5  # segundos
+TIMEOUT = 30  # segundos
 INSPECT_TIMEOUT = 20  # la inferencia del modelo tarda más que un login
 
 
